@@ -16,6 +16,7 @@ const EditorPage = () => {
   const { roomId } = useParams();
   const location = useLocation();
   const reactNavigator = useNavigate();
+  const codeRef = useRef(null);
 
   const [clients, setClients] = useState([]);
 
@@ -44,11 +45,42 @@ const EditorPage = () => {
             toast.success(`${username} joined the room.`);
           }
           setClients(clients);
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            code: codeRef.current,
+            socketId,
+          });
         }
       );
+
+      // Listening for disconnected
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+        toast.success(`${username} left the room.`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
     };
     init();
+    return () => {
+      socketRef.current.off(ACTIONS.JOINED);
+      socketRef.current.off(ACTIONS.DISCONNECTED);
+      socketRef.current.disconnect();
+    };
   }, []);
+
+  async function copyRoomId() {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Room ID has been copied to your clipboard");
+    } catch (error) {
+      toast.error("Could not copy the Room ID");
+      console.error(error);
+    }
+  }
+
+  function leaveRoom() {
+    reactNavigator("/");
+  }
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -68,28 +100,21 @@ const EditorPage = () => {
             ))}
           </div>
         </div>
-        <button
-          className="btn copyBtn"
-          // onClick={copyRoomId}
-        >
+        <button className="btn copyBtn" onClick={copyRoomId}>
           Copy ROOM ID
         </button>
-        <button
-          className="btn leaveBtn"
-          // onClick={leaveRoom}
-        >
+        <button className="btn leaveBtn" onClick={leaveRoom}>
           Leave
         </button>
       </div>
       <div className="editorWrap">
-        <Editor />
-        {/* <Editor
+        <Editor
           socketRef={socketRef}
           roomId={roomId}
           onCodeChange={(code) => {
             codeRef.current = code;
           }}
-        /> */}
+        />
       </div>
     </div>
   );
