@@ -8,8 +8,11 @@ import "codemirror/addon/edit/closebrackets";
 
 const Editor = () => {
   const editorRef = useRef(null);
+
   useEffect(() => {
+    console.log("useEffect called");
     async function init() {
+      console.log("Initializing Codemirror");
       editorRef.current = Codemirror.fromTextArea(
         document.getElementById("realtimeEditor"),
         {
