@@ -1,8 +1,8 @@
-# Booking App
+# Real Time Code Editor
 
 ## Description
 
-This project is a React-based user interface to display user profile, accommodation and booking details.
+This project is allowing users to make remote collaboration used Reactjs, Nodejs, Expressjs and Web Socket.
 
 ## Usage
 
