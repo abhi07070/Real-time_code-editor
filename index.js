@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 // static files access
-app.use(express.static(path.join(__dirname, "../../client/build")));
+app.use(express.static(path.join(__dirname, "./client/build")));
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../client/build/index.html"));
+  res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
 const port = process.env.PORT || 5000;
