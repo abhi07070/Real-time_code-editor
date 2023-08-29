@@ -3,9 +3,14 @@ const http = require("http");
 const { Server } = require("socket.io");
 const dotenv = require("dotenv");
 const ACTIONS = require("../client/src/Actions");
+const path = require("path");
 dotenv.config();
 
 const app = express();
+
+// static files access
+app.use(express.static(path.join(__dirname, "../../client/build")));
+
 const server = http.createServer(app);
 const io = new Server(server);
 
@@ -57,6 +62,10 @@ io.on("connection", (socket) => {
     delete userSocketMap[socket.id];
     socket.leave();
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/build/index.html"));
 });
 
 const port = process.env.PORT || 5000;
